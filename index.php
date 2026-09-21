@@ -1,138 +1,285 @@
 <?php
-// ==========================
-// BASIC ENV DETECTION
-// ==========================
-$isLocal = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'], true);
+require_once __DIR__ . '/helpers.php';
 
-// ==========================
-// QUERY HANDLING (SAFE)
-// ==========================
-if (isset($_GET['q'])) {
-    $query = $_GET['q'];
+$courses = [
+    ['code' => 'WEB-01', 'name' => 'Web Dasar', 'fee' => 200000, 'quota' => 30, 'registered' => 12, 'start_date' => '2026-09-21'],
+    ['code' => 'PHP-01', 'name' => 'PHP Dasar', 'fee' => 250000, 'quota' => 30, 'registered' => 18, 'start_date' => '2026-09-22'],
+    ['code' => 'PHP-02', 'name' => 'PHP Lanjutan', 'fee' => 300000, 'quota' => 25, 'registered' => 24, 'start_date' => '2026-09-24'],
+    ['code' => 'LAR-01', 'name' => 'Laravel Fundamental', 'fee' => 350000, 'quota' => 25, 'registered' => 25, 'start_date' => '2026-09-28'],
+    ['code' => 'DB-01', 'name' => 'MySQL Dasar', 'fee' => 275000, 'quota' => 20, 'registered' => 0, 'start_date' => '2026-10-01'],
+    ['code' => 'UI-01', 'name' => 'UI Web Dasar', 'fee' => 225000, 'quota' => 35, 'registered' => 9, 'start_date' => '2026-10-03'],
+];
 
-    // Allow-list approach
-    if ($query === 'info') {
+$siteName = "KursusKu";
+$tagline = "Belajar Teknologi, Bangun Masa Depan";
+$tahun = date("Y");
 
-        // phpinfo allowed ONLY on localhost
-        if ($isLocal) {
-            phpinfo();
-            exit;
-        }
-
-        http_response_code(403);
-        exit('Forbidden! phpinfo allowed ONLY on localhost');
-    }
-
-    // Unknown query
-    http_response_code(404);
-    exit('Invalid query parameter.');
-}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laragon</title>
+  <meta charset="UTF-8">
 
-    <link href="https://fonts.googleapis.com/css?family=Karla:400" rel="stylesheet">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: 'Karla', sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-        }
+  <title><?php echo $siteName; ?></title>
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            text-align: center;
-        }
-
-        .content {
-            max-width: 800px;
-            padding: 100px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .title {
-            font-size: 60px;
-            margin: 0;
-        }
-
-        .info {
-            margin-top: 20px;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-
-        .info a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .info a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-        .opt {
-            margin-top: 30px;
-        }
-
-        .opt a {
-            font-size: 18px;
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .opt a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-    </style>
+  <link
+    rel="stylesheet"
+    href="assets/css/style.css">
 </head>
+
 <body>
+  <header class="header">
 
-<div class="container">
-    <div class="content">
-        <h1 class="title">Laragon</h1>
+    <div class="container">
 
-        <div class="info">
-            <?php if ($isLocal): ?>
-                <p><?= htmlspecialchars($_SERVER['SERVER_SOFTWARE'], ENT_QUOTES, 'UTF-8'); ?></p>
-                <p>
-                    PHP version: <?= htmlspecialchars(PHP_VERSION, ENT_QUOTES, 'UTF-8'); ?>
-                    <a title="phpinfo()" href="/?q=info">info</a>
-                </p>
-                <p>
-                    Document Root:
-                    <?= htmlspecialchars($_SERVER['DOCUMENT_ROOT'], ENT_QUOTES, 'UTF-8'); ?>
-                </p>
-            <?php else: ?>
-                <p>Server is running</p>
-                <p>PHP is enabled</p>
-            <?php endif; ?>
-        </div>
+      <h1>
+        <?php echo $siteName; ?>
+      </h1>
 
-        <div class="opt">
-            <p>
-                <a href="https://laragon.org/docs" target="_blank" rel="noopener">
-                    Getting Started
-                </a>
-            </p>
-        </div>
+      <p>
+        <?php echo $tagline; ?>
+      </p>
+
     </div>
-</div>
 
+  </header>
+
+  <nav class="navbar">
+
+    <div class="container">
+
+      <a href="#beranda">Beranda</a>
+
+      <a href="#kursus">Kursus</a>
+
+      <a href="#tentang">Tentang</a>
+
+      <a href="#kontak">Kontak</a>
+
+    </div>
+
+  </nav>
+
+  <main>
+    <section id="beranda" class="hero">
+
+      <div class="container">
+
+        <div class="hero-content">
+
+          <div>
+
+            <h2>
+              Selamat Datang di
+              <?php echo $siteName; ?>
+            </h2>
+
+            <p>
+              Platform belajar teknologi untuk
+              mahasiswa yang ingin meningkatkan
+              kemampuan pemrograman web.
+            </p>
+
+            <a
+              href="#kursus"
+              class="button">
+              Lihat Kursus
+            </a>
+
+            <a
+                href="fee-calculator.php"
+                class="button">Lihat Estimasi Biaya
+              </a>
+
+          </div>
+
+          <div>
+
+            <img
+              src="assets/img/image1.png"
+              alt="Mahasiswa sedang belajar pemrograman web"
+              class="hero-image">
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===== SECTION KATALOG — DIGANTI DENGAN TABEL DINAMIS ===== -->
+    <section id="kursus" class="section">
+
+      <div class="container">
+
+        <h2>Katalog Kursus</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Kode</th>
+              <th>Nama</th>
+              <th>Biaya</th>
+              <th>Mulai</th>
+              <th>Sisa</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($courses as $course): ?>
+              <?php
+              $status = statusKursus($course['quota'], $course['registered']);
+              $statusClass = $status === 'Penuh' ? 'badge-full' : 'badge-available';
+              ?>
+              <tr>
+                <td><?= htmlspecialchars($course['code']) ?></td>
+                <td><?= htmlspecialchars(trim($course['name'])) ?></td>
+                <td><?= rupiah($course['fee']) ?></td>
+                <td><?= formatTanggal($course['start_date']) ?></td>
+                <td><?= sisaKursi($course['quota'], $course['registered']) ?></td>
+                <td><span class="<?= $statusClass ?>"><?= $status ?></span></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+
+      </div>
+
+    </section>
+    <!-- ===== AKHIR SECTION KATALOG ===== -->
+     
+    <section id="kursus" class="section">
+
+      <div class="container">
+
+        <h2>Program Kursus</h2>
+
+        <div class="course-grid">
+
+          <article class="course-card">
+
+            <h3>HTML & CSS</h3>
+
+            <p>
+              Belajar membangun struktur dan
+              tampilan website dari dasar.
+            </p>
+
+          </article>
+
+
+          <article class="course-card">
+
+            <h3>PHP</h3>
+
+            <p>
+              Belajar pemrograman web
+              server-side menggunakan PHP.
+            </p>
+
+          </article>
+
+
+          <article class="course-card">
+
+            <h3>Laravel</h3>
+
+            <p>
+              Membangun aplikasi web modern
+              menggunakan framework Laravel.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+    <section id="tentang" class="section section-light">
+
+      <div class="container">
+
+        <h2>Tentang KursusKu</h2>
+
+        <p>
+          KursusKu merupakan prototype website
+          pembelajaran yang dikembangkan dalam
+          mata kuliah Pemrograman Web III.
+        </p>
+
+        <p>
+          Pada semester ini mahasiswa akan belajar
+          PHP, MySQL dan framework Laravel.
+        </p>
+
+        <a
+          href="https://laravel.com"
+          target="_blank"
+          rel="noopener">
+          Pelajari Laravel
+        </a>
+
+      </div>
+
+    </section>
+    <section class="section">
+
+      <div class="container">
+
+        <h2>Video Pembelajaran</h2>
+
+        <div class="video-placeholder">
+
+          <iframe width="342" height="607" src="https://www.youtube.com/embed/nQinn48Bk2g" title="Kenapa Laravel Masih Banyak Yang Pake" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+
+
+      </div>
+
+    </section>
+    <section id="kontak" class="section section-light">
+
+      <div class="container">
+
+        <h2>Kontak</h2>
+
+        <p>
+          Informasi lebih lanjut mengenai
+          program KursusKu dapat diperoleh
+          melalui halaman ini.
+        </p>
+
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <p>
+
+        &copy;
+        <?php echo $tahun; ?>
+
+        <?php echo $siteName; ?>.
+
+        Pemrograman Web III.
+
+      </p>
+
+    </div>
+
+  </footer>
 </body>
+
 </html>

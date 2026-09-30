@@ -1,0 +1,76 @@
+TEST MATRIX - WEEK 05
+
+Project: KursusKu
+URL Local: http://localhost/kursusku-prototype/
+
+1. FORM PENDAFTARAN - DESKTOP
+Input:
+- Nama Lengkap: liaaa hasibuan
+- Email: nurliaaaa146@gmail.com
+- Nomor HP: 082285614955
+- Program Studi: ptik
+- Kursus: Web Dasar
+- Jenis Peserta: Mahasiswa
+- Minat Tambahan: UI/UX
+- Catatan: kosong / sesuai kebutuhan
+
+Expected Result:
+Form dapat ditampilkan dengan baik pada tampilan desktop dan seluruh field dapat diisi.
+
+Status: PASS
+
+2. FORM PENDAFTARAN - MOBILE
+Input:
+- Data pendaftaran yang sama seperti pengujian desktop.
+
+Expected Result:
+Form dapat ditampilkan dan digunakan pada ukuran layar mobile tanpa menghilangkan field penting.
+
+Status: PASS
+
+3. SUBMIT FORM / POST
+Input:
+- Mengisi field wajib kemudian klik "Kirim Pendaftaran".
+
+Expected Result:
+Data dikirim dan halaman menampilkan pesan "Pendaftaran Diterima untuk Diproses" serta data pendaftaran yang dikirim.
+
+Status: PASS
+
+4. NAVIGATION
+Action:
+- Membuka halaman utama.
+- Klik Beranda, Kursus, Tentang, dan Kontak.
+
+Expected Result:
+Link navigasi dapat diklik dan mengarah ke bagian/halaman yang sesuai.
+
+Status: PASS
+
+5. URL / GET
+Action:
+- Membuka URL yang menggunakan parameter atau anchor yang sesuai.
+
+Expected Result:
+URL dapat diakses melalui browser dan halaman menampilkan bagian yang dituju.
+
+Status: PASS
+
+6. VALIDASI FORM
+Action:
+- Mengosongkan field yang wajib diisi kemudian mencoba mengirim form.
+
+Expected Result:
+Browser/form memberikan peringatan bahwa field wajib harus diisi dan data tidak diproses sebelum field wajib dilengkapi.
+
+Status: PASS
+
+7. LOCAL SERVER
+Action:
+- Menjalankan project melalui Laragon.
+- Membuka http://localhost/kursusku-prototype/
+
+Expected Result:
+Project dapat diakses melalui localhost dan halaman KursusKu tampil.
+
+Status: PASS

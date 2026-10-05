@@ -2,7 +2,7 @@
 
 | Masalah/Tujuan          | Saran AI                                                           | Keputusan | Hasil Uji                                        |
 | ----------------------- | ------------------------------------------------------------------ | --------- | ------------------------------------------------ |
-| Branching diskon        | Pisahkan perhitungan diskon berdasarkan jenis peserta              | Diterima  | Mahasiswa 10%, guru 15%, umum 5%                 |
+| Branching diskon        | Pisahkan perhitungan diskon berdasarkan jenis peserta              | Diterima  | Mahasiswa 20%, guru 15%, umum 15%                 |
 | Checkbox kosong         | Gunakan `$_POST['interest'] ?? []` dan validasi array              | Diterima  | Tidak ada warning saat minat kosong              |
 | Pilihan kursus          | Gunakan array untuk daftar kursus dan tampilkan dengan `foreach`   | Diterima  | Semua kursus tampil pada pilihan kursus          |
 | History dummy           | Render data history dari array menggunakan `foreach`               | Diterima  | Data history tampil tanpa database/CRUD          |

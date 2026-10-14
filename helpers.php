@@ -1,4 +1,4 @@
-<?php
+]<?php
 
 declare(strict_types=1);
 
@@ -44,7 +44,7 @@ function findCourse(array $courses, string $code): ?array
 function getDiscountPercent(string $participantType): int
 {
     return match ($participantType) {
-        'mahasiswa' => 10,
+        'mahasiswa' => 15,
         'guru' => 5,
         default => 0,
     };

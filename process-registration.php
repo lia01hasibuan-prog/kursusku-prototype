@@ -1,34 +1,50 @@
+
 <?php
+
+declare(strict_types=1);
+
+/* =========================================================
+   CEK METODE REQUEST
+========================================================= */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: registration.php');
     exit;
 }
 
-
 /* =========================================================
    AMBIL DATA DARI FORM
 ========================================================= */
 
-$name = $_POST['name'] ?? '';
-$email = $_POST['email'] ?? '';
-$course = $_POST['course'] ?? '';
-$participant_type = $_POST['participant_type'] ?? '';
-$method = $_POST['method'] ?? '';
-$number = $_POST['package'] ?? '1';
-$note = $_POST['note'] ?? '';
+$name = trim((string) ($_POST['name'] ?? ''));
+$email = trim((string) ($_POST['email'] ?? ''));
+$course = (string) ($_POST['course'] ?? '');
+$participant_type = (string) ($_POST['participant_type'] ?? '');
+$method = (string) ($_POST['method'] ?? '');
+$number = (int) ($_POST['package'] ?? 1);
+$note = trim((string) ($_POST['note'] ?? ''));
 
-/*
-   Ambil semua minat yang dicentang.
-   Karena input di registration.php menggunakan interests[],
-   PHP akan menerimanya sebagai array.
-*/
+/* =========================================================
+   VALIDASI DATA
+========================================================= */
+
+if (
+    $name === '' ||
+    $email === '' ||
+    !filter_var($email, FILTER_VALIDATE_EMAIL)
+) {
+    exit('Nama atau email tidak valid. Silakan kembali dan periksa formulir.');
+}
+
+/* =========================================================
+   AMBIL DATA MINAT
+========================================================= */
+
 $interests = $_POST['interests'] ?? [];
 
 if (!is_array($interests)) {
-    $interests = [$interests];
+    $interests = [];
 }
-
 
 /* =========================================================
    NAMA KURSUS
@@ -40,7 +56,6 @@ $course_names = [
     'laravel-dasar' => 'Laravel Dasar'
 ];
 
-
 /* =========================================================
    TIPE PESERTA
 ========================================================= */
@@ -51,7 +66,6 @@ $participant_names = [
     'umum' => 'Umum'
 ];
 
-
 /* =========================================================
    METODE BELAJAR
 ========================================================= */
@@ -61,7 +75,6 @@ $method_names = [
     'offline' => 'Offline',
     'hybrid' => 'Hybrid'
 ];
-
 
 /* =========================================================
    NAMA MINAT
@@ -74,19 +87,37 @@ $interest_names = [
     'ui-ux' => 'UI/UX'
 ];
 
+/* =========================================================
+   VALIDASI PILIHAN FORM
+========================================================= */
+
+if (!isset($course_names[$course])) {
+    exit('Pilihan kursus tidak valid.');
+}
+
+if (!isset($participant_names[$participant_type])) {
+    exit('Tipe peserta tidak valid.');
+}
+
+if (!isset($method_names[$method])) {
+    exit('Metode belajar tidak valid.');
+}
+
+if ($number < 1 || $number > 3) {
+    exit('Jumlah paket harus antara 1 sampai 3.');
+}
 
 /* =========================================================
    KONVERSI DATA
 ========================================================= */
 
-$course_display = $course_names[$course] ?? 'Tidak diketahui';
+$course_display = $course_names[$course];
 
 $participant_display =
-    $participant_names[$participant_type] ?? 'Tidak diketahui';
+    $participant_names[$participant_type];
 
 $method_display =
-    $method_names[$method] ?? 'Tidak diketahui';
-
+    $method_names[$method];
 
 /* =========================================================
    PROSES MINAT
@@ -95,15 +126,13 @@ $method_display =
 $interest_display = [];
 
 foreach ($interests as $interest) {
-
-    if (isset($interest_names[$interest])) {
-
-        $interest_display[] =
-            $interest_names[$interest];
-
+    if (
+        is_string($interest) &&
+        isset($interest_names[$interest])
+    ) {
+        $interest_display[] = $interest_names[$interest];
     }
 }
-
 
 /* =========================================================
    HARGA KURSUS
@@ -115,52 +144,25 @@ $prices = [
     'laravel-dasar' => 500000
 ];
 
-$unit_price = $prices[$course] ?? 0;
-
-
-/* =========================================================
-   JUMLAH PAKET
-========================================================= */
-
-$number = (int) $number;
-
-if ($number < 1) {
-    $number = 1;
-}
-
+$unit_price = $prices[$course];
 
 /* =========================================================
-   SUBTOTAL
+   HITUNG SUBTOTAL
 ========================================================= */
 
 $subtotal = $unit_price * $number;
-
-
-/* =========================================================
-   DISKON
-========================================================= */
-
-if ($number == 1) {
-
-    $discount_percent = 15;
-
-} elseif ($number == 2) {
-
-    $discount_percent = 20;
-
-} else {
-
-    $discount_percent = 20;
-
-}
-
 
 /* =========================================================
    HITUNG DISKON
 ========================================================= */
 
-$discount = $subtotal * ($discount_percent / 100);
+if ($number === 1) {
+    $discount_percent = 15;
+} else {
+    $discount_percent = 20;
+}
 
+$discount = $subtotal * ($discount_percent / 100);
 
 /* =========================================================
    TOTAL AKHIR
@@ -168,12 +170,11 @@ $discount = $subtotal * ($discount_percent / 100);
 
 $total = $subtotal - $discount;
 
-
 /* =========================================================
-   FORMAT RUPIAH
+   FUNGSI FORMAT RUPIAH
 ========================================================= */
 
-function rupiah($number)
+function rupiah(int|float $number): string
 {
     return 'Rp ' . number_format(
         $number,
@@ -183,15 +184,25 @@ function rupiah($number)
     );
 }
 
+/* =========================================================
+   FUNGSI AMAN UNTUK MENAMPILKAN TEKS
+========================================================= */
+
+function e(string $value): string
+{
+    return htmlspecialchars(
+        $value,
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
+
 ?>
 
-
 <!DOCTYPE html>
-
 <html lang="id">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -199,17 +210,13 @@ function rupiah($number)
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Ringkasan Pendaftaran - KursusKu
-    </title>
+    <title>Ringkasan Pendaftaran - KursusKu</title>
 
     <link
         rel="stylesheet"
         href="assets/css/style.css"
     >
-
 </head>
-
 
 <body>
 
@@ -217,192 +224,102 @@ function rupiah($number)
 
     <div class="summary-card">
 
-
-        <!-- =================================================
-             JUDUL
-        ================================================== -->
+        <!-- JUDUL -->
 
         <p class="summary-eyebrow">
             MILESTONE 6 · RINGKASAN
         </p>
 
-        <h1>
-            Pendaftaran Berhasil Diproses
-        </h1>
+        <h1>Pendaftaran Berhasil Diproses</h1>
 
+        <p>
+            Terima kasih telah mendaftar di KursusKu.
+            Berikut adalah ringkasan data pendaftaran kamu.
+        </p>
 
-        <!-- =================================================
-             DATA PESERTA
-        ================================================== -->
+        <!-- DATA PESERTA -->
+
+        <h2>Data Peserta</h2>
 
         <div class="summary-info-grid">
 
-
             <div class="info-box">
-
-                <strong>
-                    Nama:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($name) ?>
-                </span>
-
+                <strong>Nama:</strong>
+                <span><?= e($name) ?></span>
             </div>
 
-
             <div class="info-box">
-
-                <strong>
-                    Email:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($email) ?>
-                </span>
-
+                <strong>Email:</strong>
+                <span><?= e($email) ?></span>
             </div>
 
-
             <div class="info-box">
-
-                <strong>
-                    Kursus:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($course_display) ?>
-                </span>
-
+                <strong>Kursus:</strong>
+                <span><?= e($course_display) ?></span>
             </div>
 
-
             <div class="info-box">
-
-                <strong>
-                    Tipe peserta:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($participant_display) ?>
-                </span>
-
+                <strong>Tipe peserta:</strong>
+                <span><?= e($participant_display) ?></span>
             </div>
 
-
             <div class="info-box">
-
-                <strong>
-                    Metode:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($method_display) ?>
-                </span>
-
+                <strong>Metode:</strong>
+                <span><?= e($method_display) ?></span>
             </div>
 
-
             <div class="info-box">
-
-                <strong>
-                    Jumlah paket:
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($number) ?>
-                </span>
-
+                <strong>Jumlah paket:</strong>
+                <span><?= $number ?></span>
             </div>
 
         </div>
 
+        <!-- RINCIAN BIAYA -->
 
-        <!-- =================================================
-             RINCIAN BIAYA
-        ================================================== -->
-
-        <h2>
-            Rincian Biaya
-        </h2>
-
+        <h2>Rincian Biaya</h2>
 
         <div class="price-box">
 
-
             <div class="price-row">
-
-                <span>
-                    Biaya satuan
-                </span>
-
-                <span>
-                    <?= rupiah($unit_price) ?>
-                </span>
-
+                <span>Biaya satuan</span>
+                <span><?= rupiah($unit_price) ?></span>
             </div>
 
-
             <div class="price-row">
-
-                <span>
-                    Subtotal
-                </span>
-
-                <span>
-                    <?= rupiah($subtotal) ?>
-                </span>
-
+                <span>Jumlah paket</span>
+                <span><?= $number ?> paket</span>
             </div>
 
-
             <div class="price-row">
-
-                <span>
-                    Diskon <?= $discount_percent ?>%
-                </span>
-
-                <span>
-                    -<?= rupiah($discount) ?>
-                </span>
-
+                <span>Subtotal</span>
+                <span><?= rupiah($subtotal) ?></span>
             </div>
 
+            <div class="price-row">
+                <span>Diskon <?= $discount_percent ?>%</span>
+                <span>-<?= rupiah($discount) ?></span>
+            </div>
 
             <div class="price-row total-row">
-
-                <strong>
-                    TOTAL AKHIR
-                </strong>
-
-                <strong>
-                    <?= rupiah($total) ?>
-                </strong>
-
+                <strong>TOTAL AKHIR</strong>
+                <strong><?= rupiah($total) ?></strong>
             </div>
 
         </div>
 
+        <!-- MINAT -->
 
-        <!-- =================================================
-             MINAT
-        ================================================== -->
-
-        <h2>
-            Minat
-        </h2>
-
+        <h2>Minat</h2>
 
         <div class="interest-list">
 
-            <?php if (count($interest_display) > 0): ?>
+            <?php if (!empty($interest_display)): ?>
 
                 <?php foreach ($interest_display as $interest): ?>
 
                     <span class="interest">
-
-                        <?= htmlspecialchars($interest) ?>
-
+                        <?= e($interest) ?>
                     </span>
 
                 <?php endforeach; ?>
@@ -410,72 +327,42 @@ function rupiah($number)
             <?php else: ?>
 
                 <span class="interest">
-
-                    Belum memilih minat
-
+                    Belum ada minat tambahan.
                 </span>
 
             <?php endif; ?>
 
         </div>
 
+        <!-- FASILITAS -->
 
-        <!-- =================================================
-             FASILITAS
-        ================================================== -->
-
-        <h2>
-            Fasilitas
-        </h2>
-
+        <h2>Fasilitas</h2>
 
         <ul class="facility-list">
-
-            <li>
-                Modul digital
-            </li>
-
-            <li>
-                Sertifikat penyelesaian
-            </li>
-
-            <li>
-                Forum diskusi kelas
-            </li>
-
+            <li>Modul digital</li>
+            <li>Sertifikat penyelesaian</li>
+            <li>Forum diskusi kelas</li>
         </ul>
 
+        <!-- CATATAN -->
 
-        <!-- =================================================
-             CATATAN
-        ================================================== -->
-
-        <h2>
-            Catatan
-        </h2>
-
+        <h2>Catatan</h2>
 
         <p class="note">
+            <?php if ($note !== ''): ?>
 
-            <?php if (!empty(trim($note))): ?>
-
-                <?= htmlspecialchars($note) ?>
+                <?= nl2br(e($note)) ?>
 
             <?php else: ?>
 
                 Tidak ada catatan tambahan.
 
             <?php endif; ?>
-
         </p>
 
-
-        <!-- =================================================
-             TOMBOL
-        ================================================== -->
+        <!-- TOMBOL -->
 
         <div class="summary-actions">
-
 
             <a
                 href="registration.php"
@@ -484,14 +371,12 @@ function rupiah($number)
                 Daftar Lagi
             </a>
 
-
             <a
-                href="#"
+                href="history-dummy.php"
                 class="btn btn-outline"
             >
                 Lihat History Dummy
             </a>
-
 
             <a
                 href="index.php"
@@ -500,14 +385,11 @@ function rupiah($number)
                 Beranda
             </a>
 
-
         </div>
-
 
     </div>
 
 </main>
 
 </body>
-
 </html>
